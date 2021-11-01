@@ -7,12 +7,12 @@ package main
 import (
 	"sync/atomic"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/mempool"
-	"github.com/btcsuite/btcd/netsync"
-	"github.com/btcsuite/btcd/peer"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/anupcshan/btcd/blockchain"
+	"github.com/anupcshan/btcd/chaincfg/chainhash"
+	"github.com/anupcshan/btcd/mempool"
+	"github.com/anupcshan/btcd/netsync"
+	"github.com/anupcshan/btcd/peer"
+	"github.com/anupcshan/btcd/wire"
 	"github.com/btcsuite/btcutil"
 )
 

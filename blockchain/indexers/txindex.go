@@ -8,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/anupcshan/btcd/blockchain"
+	"github.com/anupcshan/btcd/chaincfg/chainhash"
+	"github.com/anupcshan/btcd/database"
+	"github.com/anupcshan/btcd/wire"
 	"github.com/btcsuite/btcutil"
 )
 

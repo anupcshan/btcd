@@ -8,7 +8,7 @@
 package database
 
 import (
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/anupcshan/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcutil"
 )
 
