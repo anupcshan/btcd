@@ -17,8 +17,8 @@ import (
 	"github.com/anupcshan/btcd/rpcclient"
 	"github.com/anupcshan/btcd/txscript"
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/anupcshan/btcutil"
+	"github.com/anupcshan/btcutil/hdkeychain"
 )
 
 var (

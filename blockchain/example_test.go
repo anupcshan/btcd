@@ -14,7 +14,7 @@ import (
 	"github.com/anupcshan/btcd/chaincfg"
 	"github.com/anupcshan/btcd/database"
 	_ "github.com/anupcshan/btcd/database/ffldb"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 )
 
 // This example demonstrates how to create a new chain instance and use

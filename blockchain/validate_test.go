@@ -13,7 +13,7 @@ import (
 	"github.com/anupcshan/btcd/chaincfg"
 	"github.com/anupcshan/btcd/chaincfg/chainhash"
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 )
 
 // TestSequenceLocksActive tests the SequenceLockActive function to ensure it

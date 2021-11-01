@@ -20,7 +20,7 @@ import (
 	_ "github.com/anupcshan/btcd/database/ffldb"
 	"github.com/anupcshan/btcd/txscript"
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 )
 
 const (

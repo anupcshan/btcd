@@ -20,7 +20,7 @@ import (
 	"github.com/anupcshan/btcd/chaincfg"
 	"github.com/anupcshan/btcd/database"
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 	"github.com/btcsuite/goleveldb/leveldb"
 	ldberrors "github.com/btcsuite/goleveldb/leveldb/errors"
 )

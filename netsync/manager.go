@@ -19,7 +19,7 @@ import (
 	"github.com/anupcshan/btcd/mempool"
 	peerpkg "github.com/anupcshan/btcd/peer"
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 )
 
 const (

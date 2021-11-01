@@ -12,7 +12,7 @@ import (
 	"github.com/anupcshan/btcd/chaincfg/chainhash"
 
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 )
 
 // GetBlockHeaderVerboseResult models the data from the getblockheader command when

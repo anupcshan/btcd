@@ -14,7 +14,7 @@ import (
 	"github.com/anupcshan/btcd/database"
 	_ "github.com/anupcshan/btcd/database/ffldb"
 	"github.com/anupcshan/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/anupcshan/btcutil"
 )
 
 var (
