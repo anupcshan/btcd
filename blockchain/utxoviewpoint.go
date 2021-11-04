@@ -5,13 +5,18 @@
 package blockchain
 
 import (
+	"context"
 	"fmt"
+	"runtime"
+	"sync"
 
 	"github.com/anupcshan/btcd/chaincfg/chainhash"
 	"github.com/anupcshan/btcd/database"
 	"github.com/anupcshan/btcd/txscript"
 	"github.com/anupcshan/btcd/wire"
 	"github.com/anupcshan/btcutil"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // txoFlags is a bitmask defining additional information and state for a
@@ -492,6 +497,18 @@ func (view *UtxoViewpoint) fetchUtxosMain(db database.DB, outpoints map[wire.Out
 		return nil
 	}
 
+	var writeLock sync.Mutex
+	g, _ := errgroup.WithContext(context.Background())
+
+	outpointCh := make(chan wire.OutPoint)
+
+	go func() {
+		for outpoint := range outpoints {
+			outpointCh <- outpoint
+		}
+		close(outpointCh)
+	}()
+
 	// Load the requested set of unspent transaction outputs from the point
 	// of view of the end of the main chain.
 	//
@@ -500,16 +517,24 @@ func (view *UtxoViewpoint) fetchUtxosMain(db database.DB, outpoints map[wire.Out
 	// so other code can use the presence of an entry in the store as a way
 	// to unnecessarily avoid attempting to reload it from the database.
 	return db.View(func(dbTx database.Tx) error {
-		for outpoint := range outpoints {
-			entry, err := dbFetchUtxoEntry(dbTx, outpoint)
-			if err != nil {
-				return err
-			}
+		for i := 0; i < runtime.NumCPU(); i++ {
+			g.Go(func() error {
+				for outpoint := range outpointCh {
+					entry, err := dbFetchUtxoEntry(dbTx, outpoint)
+					if err != nil {
+						return err
+					}
 
-			view.entries[outpoint] = entry
+					writeLock.Lock()
+					view.entries[outpoint] = entry
+					writeLock.Unlock()
+
+				}
+				return nil
+			})
 		}
 
-		return nil
+		return g.Wait()
 	})
 }
 
