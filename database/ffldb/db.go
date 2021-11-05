@@ -12,7 +12,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"sync"
+	"time"
 
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -2129,17 +2131,56 @@ func openDB(dbPath string, network wire.BitcoinNet, create bool) (database.DB, e
 		_ = os.MkdirAll(dbPath, 0700)
 	}
 
+	var seekCompactionEnabled = false
+	if seekCompactionEnabled {
+		seekCompaction.Set(1)
+	}
+
 	// Open the metadata database (will create it if needed).
 	opts := opt.Options{
-		ErrorIfExist: create,
-		Strict:       opt.DefaultStrict,
-		Compression:  opt.NoCompression,
-		Filter:       filter.NewBloomFilter(10),
+		ErrorIfExist:           create,
+		Strict:                 opt.DefaultStrict,
+		Compression:            opt.NoCompression,
+		Filter:                 filter.NewBloomFilter(10),
+		DisableSeeksCompaction: !seekCompactionEnabled,
+		OpenFilesCacheCapacity: 1500,
+		BlockCacheCapacity:     128 * opt.MiB,
 	}
 	ldb, err := leveldb.OpenFile(metadataDbPath, &opts)
 	if err != nil {
 		return nil, convertErr(err.Error(), err)
 	}
+
+	go func() {
+		for range time.Tick(5 * time.Second) {
+			var dbstats leveldb.DBStats
+			if err := ldb.Stats(&dbstats); err != nil {
+				continue
+			}
+			ioWrite.Set(float64(dbstats.IOWrite))
+			ioRead.Set(float64(dbstats.IORead))
+			openTables.Set(float64(dbstats.OpenedTablesCount))
+			for i, size := range dbstats.LevelSizes {
+				levelTableSizes.WithLabelValues(strconv.Itoa(i)).Set(float64(size))
+			}
+			for i, count := range dbstats.LevelTablesCounts {
+				levelTableCounts.WithLabelValues(strconv.Itoa(i)).Set(float64(count))
+			}
+			for i, io := range dbstats.LevelRead {
+				levelRead.WithLabelValues(strconv.Itoa(i)).Set(float64(io))
+			}
+			for i, io := range dbstats.LevelWrite {
+				levelWrite.WithLabelValues(strconv.Itoa(i)).Set(float64(io))
+			}
+			for i, dur := range dbstats.LevelDurations {
+				levelCompactionDuration.WithLabelValues(strconv.Itoa(i)).Set(float64(dur.Milliseconds()))
+			}
+			compactions.WithLabelValues("level0").Set(float64(dbstats.Level0Comp))
+			compactions.WithLabelValues("non-level0").Set(float64(dbstats.NonLevel0Comp))
+			compactions.WithLabelValues("mem").Set(float64(dbstats.MemComp))
+			compactions.WithLabelValues("seek").Set(float64(dbstats.SeekComp))
+		}
+	}()
 
 	// Create the block store which includes scanning the existing flat
 	// block files to find what the current write cursor position is

@@ -697,6 +697,7 @@ func (b *BlockChain) connectBlock(node *blockNode, block *btcutil.Block,
 	// comments on the state variable for more details.
 	b.stateLock.Lock()
 	b.stateSnapshot = state
+	logSnapshotState(b.stateSnapshot)
 	b.stateLock.Unlock()
 
 	// Notify the caller that the block was connected to the main chain.
@@ -831,6 +832,7 @@ func (b *BlockChain) disconnectBlock(node *blockNode, block *btcutil.Block, view
 	// comments on the state variable for more details.
 	b.stateLock.Lock()
 	b.stateSnapshot = state
+	logSnapshotState(b.stateSnapshot)
 	b.stateLock.Unlock()
 
 	// Notify the caller that the block was disconnected from the main

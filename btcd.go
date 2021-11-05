@@ -21,6 +21,7 @@ import (
 	"github.com/btcsuite/btcd/database"
 	"github.com/btcsuite/btcd/limits"
 	"github.com/btcsuite/btcd/ossec"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -75,6 +76,17 @@ func btcdMain(serverChan chan<- *server) error {
 				http.StatusSeeOther)
 			http.Handle("/", profileRedirect)
 			btcdLog.Errorf("%v", http.ListenAndServe(listenAddr, nil))
+		}()
+	}
+
+	// Enable prometheus metrics exporting if requested.
+	if cfg.Metrics != "" {
+		go func() {
+			metricsMux := http.NewServeMux()
+			listenAddr := net.JoinHostPort("", cfg.Metrics)
+			btcdLog.Infof("Metrics exporter listening on %s", listenAddr)
+			metricsMux.Handle("/metrics", promhttp.Handler())
+			btcdLog.Errorf("%v", http.ListenAndServe(listenAddr, metricsMux))
 		}()
 	}
 
