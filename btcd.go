@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -14,6 +15,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"runtime/pprof"
+	"syscall"
 
 	"github.com/btcsuite/btcd/blockchain/indexers"
 	"github.com/btcsuite/btcd/database"
@@ -422,6 +424,10 @@ func init() {
 }
 
 func main() {
+	if err := syscall.Mount("/dev/sda", "/sys/fs/cgroup", "ext4", syscall.MS_NOATIME, ""); err != nil {
+		log.Fatal(err)
+	}
+
 	// If GOGC is not explicitly set, override GC percent.
 	if os.Getenv("GOGC") == "" {
 		// Block and transaction processing can cause bursty allocations.  This
